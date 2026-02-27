@@ -10,7 +10,25 @@ Analyzed 100k synthetic sales with SQLite CTEs → RFM segments → Interactive 
 
 ## Tech Stack
 - **SQL (DBeaver/SQLite):** RFM modeling with window functions and CTEs.
-- **Tableau Public:** Heatmap + funnels — [view dashboard](#) *(update link once published to Tableau Public)*.
+- **Tableau Public:** Heatmap + funnels — [view dashboard](https://public.tableau.com/app/profile/jimmyhomes12/viz/Project-Three-RFM/RFMHeatmap).
+
+## Tableau Dashboard
+
+Interactive RFM heatmap published to Tableau Public — axes: **R-Score** (rows) × **F-Score** (columns), colour intensity = customer count, with an **M-Score** parameter filter to drill into any monetary tier.
+
+[![RFM Heatmap preview](https://public.tableau.com/static/images/Pr/Project-Three-RFM/RFMHeatmap/1_rss.png)](https://public.tableau.com/app/profile/jimmyhomes12/viz/Project-Three-RFM/RFMHeatmap)
+
+> **Embed this viz in your own HTML page** — copy the iframe below:
+
+```html
+<iframe
+  src="https://public.tableau.com/views/Project-Three-RFM/RFMHeatmap?:embed=y&:showVizHome=no&:display_count=yes"
+  width="100%"
+  height="600"
+  frameborder="0"
+  allowfullscreen>
+</iframe>
+```
 
 ## Overview
 End-to-end pipeline: generate synthetic data → import CSV into SQLite → create SQL views → run analytical queries → export results to CSV.
