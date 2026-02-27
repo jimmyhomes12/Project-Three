@@ -1,4 +1,16 @@
-# Project-Three — Synthetic E-Commerce Analytics (SQLite)
+# Project Three: 2025 E-com RFM Analysis (SQL + Tableau)
+
+![SQL](https://img.shields.io/badge/SQL-SQLite-blue) ![Tableau](https://img.shields.io/badge/Tableau-Public-orange)
+
+Analyzed 100k synthetic sales with SQLite CTEs → RFM segments → Interactive dashboard.
+
+## Key Insights
+- Identified 4,000+ VIP customers (5-5-5 segment) — see [`output/rfm_segments.csv`](output/rfm_segments.csv).
+- Promo codes drove **20% avg order lift** — see [`output/promo_roi.csv`](output/promo_roi.csv).
+
+## Tech Stack
+- **SQL (DBeaver/SQLite):** RFM modeling with window functions and CTEs.
+- **Tableau Public:** Heatmap + funnels — [view dashboard](#) *(update link once published to Tableau Public)*.
 
 ## Overview
 End-to-end pipeline: generate synthetic data → import CSV into SQLite → create SQL views → run analytical queries → export results to CSV.
