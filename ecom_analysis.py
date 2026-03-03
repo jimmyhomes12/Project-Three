@@ -5,6 +5,7 @@ ecom_analysis.py
 2. Create SQL views: orders_view, customers_view
 3. Run Promo ROI and RFM segmentation queries
 4. Export results to CSV files in output/
+5. Export Tableau-ready CSVs to data/ (rfm_scores.csv, full_ecom.csv)
 """
 
 import sqlite3
@@ -16,6 +17,8 @@ CSV_PATH = "data/synthetic_ecommerce_sales_2025.csv"
 DB_PATH = "ecom.db"
 OUTPUT_PROMO = "output/promo_roi.csv"
 OUTPUT_RFM = "output/rfm_segments.csv"
+OUTPUT_RFM_SCORES = "data/rfm_scores.csv"
+OUTPUT_FULL_ECOM = "data/full_ecom.csv"
 
 # ── 1. Load CSV → SQLite ───────────────────────────────────────────────────────
 print("Loading CSV into SQLite …")
@@ -115,5 +118,53 @@ with sqlite_engine.connect() as conn:
 rfm_df.to_csv(OUTPUT_RFM, index=False)
 print(f"  Saved → {OUTPUT_RFM}")
 print(rfm_df.to_string(index=False))
+
+# ── 3c. Per-Customer RFM Scores (for Tableau relationship on customer_id) ──────
+RFM_SCORES_SQL = """
+WITH rfm AS (
+  SELECT customer_id,
+         JULIANDAY('2025-12-31') - JULIANDAY(MAX(purchase_date)) AS recency_days,
+         COUNT(DISTINCT order_id)                                 AS frequency,
+         SUM(sales_amount)                                        AS monetary
+  FROM ecom
+  GROUP BY customer_id
+),
+rfm_scored AS (
+  SELECT customer_id,
+         recency_days,
+         frequency,
+         monetary,
+         NTILE(5) OVER (ORDER BY recency_days DESC) AS r_score,
+         NTILE(5) OVER (ORDER BY frequency DESC) AS f_score,
+         NTILE(5) OVER (ORDER BY monetary DESC)  AS m_score
+  FROM rfm
+)
+SELECT customer_id,
+       r_score,
+       f_score,
+       m_score,
+       recency_days,
+       frequency,
+       ROUND(monetary, 2) AS total_revenue
+FROM rfm_scored
+ORDER BY customer_id;
+"""
+
+print("\nExporting per-customer RFM scores …")
+with sqlite_engine.connect() as conn:
+    rfm_scores_df = pd.read_sql_query(RFM_SCORES_SQL, conn)
+
+rfm_scores_df.to_csv(OUTPUT_RFM_SCORES, index=False)
+print(f"  Saved → {OUTPUT_RFM_SCORES}  ({len(rfm_scores_df):,} customers)")
+
+# ── 4. Export full_ecom.csv (Tableau-ready column names) ──────────────────────
+print("\nExporting full_ecom.csv …")
+full_ecom_df = df.rename(columns={
+    "purchase_date":    "order_date",
+    "product_category": "category",
+    "device_type":      "device",
+})
+full_ecom_df.to_csv(OUTPUT_FULL_ECOM, index=False)
+print(f"  Saved → {OUTPUT_FULL_ECOM}  ({len(full_ecom_df):,} rows)")
 
 print("\nDone.")
