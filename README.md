@@ -38,9 +38,12 @@ End-to-end pipeline: generate synthetic data → import CSV into SQLite → crea
 |------|---------|
 | `generate_data.py` | Generates `data/synthetic_ecommerce_sales_2025.csv` (5 000 rows) |
 | `ecom_analysis.py` | Loads CSV → SQLite, creates views, runs queries, exports CSVs |
-| `data/synthetic_ecommerce_sales_2025.csv` | Synthetic dataset |
+| `data/synthetic_ecommerce_sales_2025.csv` | Synthetic dataset (raw) |
+| `data/rfm_scores.csv` | Per-customer RFM scores (`customer_id, r_score, f_score, m_score, recency_days, frequency, total_revenue`) — used as the primary Tableau data source for the heatmap and relationships |
+| `data/full_ecom.csv` | Full order data with Tableau-friendly column names (`order_id, customer_id, category, sales_amount, order_date, device, promo_code, review_score`) — used for the Sales Trend sheet |
 | `output/promo_roi.csv` | Promo ROI query results |
-| `output/rfm_segments.csv` | RFM segmentation query results |
+| `output/rfm_segments.csv` | RFM segmentation query results (aggregated by score combination) |
+| `tableau_viz/Ecom_RFM_Dashboard.twbx` | Packaged Tableau workbook (data bundled) |
 
 ## Dataset Columns
 `order_id`, `customer_id`, `product_category`, `sales_amount`, `purchase_date`, `device_type`, `promo_code`, `review_score`
@@ -53,6 +56,12 @@ python3 generate_data.py
 # run the full pipeline
 python3 ecom_analysis.py
 ```
+
+Outputs:
+- `output/rfm_segments.csv` — aggregated RFM heatmap data
+- `output/promo_roi.csv` — promo code ROI summary
+- `data/rfm_scores.csv` — per-customer RFM scores (Tableau primary source)
+- `data/full_ecom.csv` — full order data (Tableau trend sheet)
 
 Requires: `pandas`, `sqlalchemy` (`pip install pandas sqlalchemy`)
 
